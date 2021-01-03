@@ -84,7 +84,7 @@ module.exports = {
       validate.signin(name, password);
       try {
         const user = await User.findOne({
-          $or: [{ username: name }, { email: name }],
+          $or: [{ username: name.trim() }, { email: name.trim() }],
         });
         console.log(user);
         if (!user) {
@@ -94,7 +94,7 @@ module.exports = {
             },
           });
         }
-        const isPass = await bcrypt.compare(password, user.password);
+        const isPass = await bcrypt.compare(password.trim(), user.password);
         if (!isPass) {
           throw new UserInputError("Invalid credentials", {
             errors: {
@@ -128,7 +128,7 @@ module.exports = {
     ) => {
       validate.signup(email, password, confirmPassword, username, profile);
       try {
-        const emailExist = await User.findOne({ email });
+        const emailExist = await User.findOne({ email:email.trim() });
         if (emailExist) {
           throw new UserInputError("email exists", {
             errors: {
@@ -136,7 +136,7 @@ module.exports = {
             },
           });
         }
-        const usernameExist = await User.findOne({ username });
+        const usernameExist = await User.findOne({ username:username.trim() });
         if (usernameExist) {
           throw new UserInputError("Username exists", {
             errors: {
@@ -145,7 +145,7 @@ module.exports = {
           });
         }
 
-        const hashPass = await bcrypt.hash(password, 10);
+        const hashPass = await bcrypt.hash(password.trim(), 10);
 
         const { filename, createReadStream, mimetype } = await profile;
         const stream = createReadStream();
@@ -174,8 +174,8 @@ module.exports = {
 
         if (data) {
           const newUser = await User.create({
-            username,
-            email,
+            username:username.trim(),
+            email:email.trim(),
             password: hashPass,
             profile: S3_FILE_URL + filename,
           });

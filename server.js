@@ -8,7 +8,7 @@ const resolvers = require("./graphql/resolvers/index.js");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  cors: { origin: "*" },
+  cors: { origin: "https://instacard-react.netlify.app" },
   context: ({ req }) => ({ req }),
 });
 
